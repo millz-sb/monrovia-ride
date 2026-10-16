@@ -23,6 +23,31 @@ export async function getProfile(req: AuthenticatedRequest, res: Response) {
 
     const driver = driverRes.rows[0];
 
+    // Return vehicle details in both flat fields (make, model, plate_number)
+    // and a nested `vehicle` object so the dashboard can read either shape.
+    // If no vehicle is registered, return null rather than displaying fake details.
+    const hasVehicle = Boolean(
+      driver.make ||
+      driver.model ||
+      driver.plate_number ||
+      driver.vehicle_type
+    );
+
+    const driverWithVehicle = {
+      ...driver,
+      vehicle: hasVehicle
+        ? {
+            make: driver.make ?? null,
+            model: driver.model ?? null,
+            year: driver.year ?? null,
+            color: driver.color ?? null,
+            plate_number: driver.plate_number ?? null,
+            vehicle_type: driver.vehicle_type ?? null,
+            capacity: driver.capacity ?? null,
+          }
+        : null,
+    };
+
     // Query all completed payments for this driver
     const pastPaymentsRes = await query(
       `SELECT driver_earnings_lrd, created_at
@@ -86,7 +111,7 @@ export async function getProfile(req: AuthenticatedRequest, res: Response) {
 
     return res.json({
       success: true,
-      driver,
+      driver: driverWithVehicle,
       earnings,
     });
   } catch (error: any) {
