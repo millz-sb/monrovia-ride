@@ -55,14 +55,6 @@ export const DriverDashboard: React.FC = () => {
 
   const pollIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Support either flattened vehicle fields or a nested vehicle object from the API.
-  const vehicle = driver?.vehicle ?? driver?.vehicles?.[0] ?? null;
-  const vehicleMake = driver?.make ?? driver?.vehicle_make ?? vehicle?.make ?? '';
-  const vehicleModel = driver?.model ?? driver?.vehicle_model ?? vehicle?.model ?? '';
-  const vehiclePlate = driver?.plate_number ?? driver?.vehicle_plate_number ?? vehicle?.plate_number ?? vehicle?.license_plate ?? '';
-  const vehicleYear = driver?.year ?? vehicle?.year;
-  const vehicleColor = driver?.color ?? vehicle?.color;
-
   const fetchDriverData = async () => {
     try {
       const res = await api.getDriverProfile();
@@ -259,9 +251,9 @@ export const DriverDashboard: React.FC = () => {
           <div className="flex items-center gap-2 text-xs text-slate-400 mt-1">
             <span>Driver: {driver?.name || user?.name}</span>
             <span aria-hidden="true">·</span>
-            <span>{vehiclePlate || 'Vehicle plate not provided'}</span>
+            <span>{driver?.plate_number || 'Not registered'}</span>
             <span aria-hidden="true">·</span>
-            <span className="text-amber-400 font-semibold">★ {driver?.rating_average || '4.90'}</span>
+            <span className="text-amber-400 font-semibold">★ {driver?.rating_average ?? 'Not rated'}</span>
             <span aria-hidden="true">·</span>
             <span className="text-emerald-400 flex items-center gap-1">
               <ShieldCheck className="w-3.5 h-3.5" />
@@ -319,24 +311,15 @@ export const DriverDashboard: React.FC = () => {
           <div className="text-xl font-black text-white mt-0.5 tabular-nums">
             {driver?.total_trips || 0} Trips
           </div>
-          <span className="text-[10px] text-amber-400 font-semibold">★ {driver?.rating_average || '4.90'} Rating</span>
+          <span className="text-[10px] text-amber-400 font-semibold">★ {driver?.rating_average ?? 'Not rated'} Rating</span>
         </div>
 
         <div className="p-4 rounded-2xl bg-slate-900 border border-slate-800">
           <span className="block text-[11px] text-slate-400">Vehicle Registered</span>
           <div className="text-sm font-bold text-white mt-0.5 truncate">
-            {vehicleMake || vehicleModel
-              ? `${vehicleMake} ${vehicleModel}`.trim()
-              : 'Vehicle details unavailable'}
+            {driver?.make || 'Vehicle not registered'} {driver?.model || ''}
           </div>
-          <span className="block text-[10px] text-slate-400 font-mono">
-            {vehiclePlate || 'Plate number not provided'}
-          </span>
-          {(vehicleYear || vehicleColor) && (
-            <span className="block text-[10px] text-slate-500 mt-1">
-              {[vehicleYear, vehicleColor].filter(Boolean).join(' · ')}
-            </span>
-          )}
+          <span className="text-[10px] text-slate-400 font-mono">{driver?.plate_number || 'Not registered'}</span>
         </div>
       </div>
 
