@@ -1,0 +1,10 @@
+{
+  "name": "MONROVIA RIDE - Ride-Hailing for Liberia",
+  "description": "A modern, reliable ride-hailing platform designed specifically for Monrovia, Liberia. Real-time passenger booking, driver dispatch, fare estimation in LRD, and live GPS map tracking.",
+  "requestFramePermissions": [
+    "geolocation"
+  ],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
